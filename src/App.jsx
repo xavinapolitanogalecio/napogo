@@ -104,17 +104,25 @@ export default function App() {
     })
   }, [isOnline, session?.user?.id]) // eslint-disable-line
 
-  // ─── Carga inicial + sign-out reactivo ───────────────────────────────
+  // ─── Carga inicial + sign-out + confirmación de email ───────────────
   useEffect(() => {
+    let initialLoadDone = false
+
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
+      initialLoadDone = true
       if (!s) { setAuthState('auth'); return }
       setSession(s)
       await cargarPerfilYHistorial(s)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
       if (event === 'SIGNED_OUT') {
         setSession(null); setPerfil(null); setHistorial([]); setAuthState('auth')
+      }
+      // Detecta cuando el usuario confirma el email y vuelve a la app
+      if (event === 'SIGNED_IN' && s && initialLoadDone) {
+        setSession(s)
+        await cargarPerfilYHistorial(s)
       }
     })
     return () => {
