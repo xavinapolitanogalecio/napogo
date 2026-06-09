@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- Abre este archivo en un navegador y descarga los iconos manualmente.
+     O usa cualquier imagen PNG de 192x192 y 512x512 llamadas icon-192.png e icon-512.png -->
+<html>
+<body>
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+<script>
+function drawIcon(canvas) {
+  const ctx = canvas.getContext('2d');
+  const s = canvas.width;
+  ctx.fillStyle = '#3b82f6';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, s, s, s * 0.2);
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = `bold ${s * 0.45}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('📦', s / 2, s / 2);
+}
+['c192','c512'].forEach(id => {
+  const c = document.getElementById(id);
+  drawIcon(c);
+  const a = document.createElement('a');
+  a.download = `icon-${c.width}.png`;
+  a.href = c.toDataURL();
+  a.textContent = `Descargar icon-${c.width}.png`;
+  a.style.display = 'block';
+  document.body.appendChild(a);
+});
+</script>
+</body>
+</html>
