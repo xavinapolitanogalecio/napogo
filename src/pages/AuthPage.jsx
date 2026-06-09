@@ -366,7 +366,30 @@ function RegTiendas({ datos, onFinalizar, onVolver, cargando, error }) {
 }
 
 // ── Éxito ──────────────────────────────────────────────────────────────────────
-function PantallaExito({ nombre, onContinuar }) {
+function PantallaExito({ nombre, confirmarEmail, onContinuar }) {
+  if (confirmarEmail) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 pb-10">
+        <div className="w-full max-w-sm flex flex-col items-center gap-8 text-center">
+          <div className="w-24 h-24 bg-blue-50 border-2 border-blue-100 rounded-3xl flex items-center justify-center text-5xl">
+            📧
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-slate-800 mb-2">Revisa tu correo</h2>
+            <p className="text-slate-500 text-sm leading-relaxed">
+              Te hemos enviado un enlace de confirmación a<br/>
+              tu correo. Confírmalo y luego inicia sesión.
+            </p>
+          </div>
+          <div className="w-full flex flex-col gap-3">
+            <BtnPrimary onClick={onContinuar}>Ir a iniciar sesión →</BtnPrimary>
+            <p className="text-xs text-slate-400">¿No te ha llegado? Revisa la carpeta de spam</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 pb-10">
       <div className="w-full max-w-sm flex flex-col items-center gap-8 text-center">
@@ -429,19 +452,35 @@ export default function AuthPage({ onSuccess }) {
       })
       if (error) throw error
 
-      if (!data.session) {
-        setExitoData({ nombre: d.nombre, session: null, perfil: null })
+      // Intentar login inmediato (funciona si la confirmación de email está desactivada)
+      let session = data.session
+      if (!session) {
+        const { data: loginData } = await supabase.auth.signInWithPassword({
+          email: d.email, password: d.password,
+        })
+        session = loginData?.session ?? null
+      }
+
+      if (!session) {
+        // Confirmación de email obligatoria — mostrar pantalla de revisión de correo
+        setExitoData({ nombre: d.nombre, session: null, perfil: null, confirmarEmail: true })
         setPantalla('exito')
         return
       }
 
-      const { data: perfil, error: pErr } = await supabase
-        .from('profiles')
-        .insert({ id: data.user.id, nombre: d.nombre, correo: data.user.email, tiendas })
-        .select().single()
-      if (pErr) throw pErr
+      // Buscar perfil (puede que el trigger de BD ya lo haya creado)
+      const { data: existente } = await supabase
+        .from('profiles').select('*').eq('id', session.user.id).maybeSingle()
 
-      setExitoData({ nombre: d.nombre, session: data.session, perfil })
+      const perfil = existente ?? await (async () => {
+        const { data: nuevo } = await supabase
+          .from('profiles')
+          .insert({ id: session.user.id, nombre: d.nombre, correo: d.email, tiendas })
+          .select().single()
+        return nuevo
+      })()
+
+      setExitoData({ nombre: d.nombre, session, perfil, confirmarEmail: false })
       setPantalla('exito')
     } catch (err) {
       setError(traducir(err.message))
@@ -493,6 +532,7 @@ export default function AuthPage({ onSuccess }) {
   if (pantalla === 'exito' && exitoData) return (
     <PantallaExito
       nombre={exitoData.nombre}
+      confirmarEmail={exitoData.confirmarEmail}
       onContinuar={() => {
         if (exitoData.session) {
           onSuccess(exitoData.session, exitoData.perfil)
