@@ -79,7 +79,11 @@ export default function AuthPage({ onSuccess }) {
     setError('')
     setCargando(true)
     try {
-      const { data, error } = await supabase.auth.signUp({ email: form.email.trim(), password: form.password })
+      const { data, error } = await supabase.auth.signUp({
+        email: form.email.trim(),
+        password: form.password,
+        options: { data: { nombre: form.nombre.trim(), tiendas } },
+      })
       if (error) throw error
       if (!data.session) {
         setInfoMsg('¡Cuenta creada! Revisa tu correo para confirmar y luego inicia sesión.')

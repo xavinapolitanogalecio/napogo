@@ -176,7 +176,22 @@ export default function App() {
     ])
     setPerfil(p ?? null)
     setHistorial(h ?? [])
-    if (!p) { setAuthState('setup'); return }
+    if (!p) {
+      const meta = s.user.user_metadata ?? {}
+      if (meta.nombre && Array.isArray(meta.tiendas) && meta.tiendas.length > 0) {
+        const { data: nuevo, error: insErr } = await supabase
+          .from('profiles')
+          .insert({ id: s.user.id, nombre: meta.nombre, correo: s.user.email, tiendas: meta.tiendas })
+          .select().single()
+        if (!insErr && nuevo) {
+          setPerfil(nuevo)
+          setAuthState(nuevo.suscripcion_activa ? 'app' : 'paywall')
+          return
+        }
+      }
+      setAuthState('setup')
+      return
+    }
     if (!p.suscripcion_activa) { setAuthState('paywall'); return }
     setAuthState('app')
   }
@@ -216,9 +231,21 @@ export default function App() {
       setPerfil(p)
       await fetchHistorial(s.user.id)
       setAuthState(p.suscripcion_activa ? 'app' : 'paywall')
-    } else {
-      setPerfil(null); setHistorial([]); setAuthState('setup')
+      return
     }
+    const meta = s.user.user_metadata ?? {}
+    if (meta.nombre && Array.isArray(meta.tiendas) && meta.tiendas.length > 0) {
+      const { data: nuevo, error: insErr } = await supabase
+        .from('profiles')
+        .insert({ id: s.user.id, nombre: meta.nombre, correo: s.user.email, tiendas: meta.tiendas })
+        .select().single()
+      if (!insErr && nuevo) {
+        setPerfil(nuevo)
+        setAuthState(nuevo.suscripcion_activa ? 'app' : 'paywall')
+        return
+      }
+    }
+    setPerfil(null); setHistorial([]); setAuthState('setup')
   }
 
   async function handleSubscriptionVerified() {
