@@ -105,7 +105,7 @@ const SOLO_LETRAS = /^[A-Za-záéíóúÁÉÍÓÚàèìòùÀÈÌÒÙñÑçÇ\s]
  */
 export function parsearResumen(texto, tiendasConocidas = []) {
   if (!Array.isArray(tiendasConocidas)) tiendasConocidas = []
-  const fecha   = extraerFecha(texto) ?? null
+  const fecha   = extraerFecha(texto) ?? fechaHoy()
   const entries = new Map()   // tienda_lower → entry
   const errores = []
 
