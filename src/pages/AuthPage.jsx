@@ -443,42 +443,15 @@ export default function AuthPage({ onSuccess }) {
     setError('')
     setCargando(true)
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: d.email,
-        password: d.password,
-        options: { data: { nombre: d.nombre, tiendas } },
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: d.email, password: d.password, nombre: d.nombre, tiendas }),
       })
-      if (error) throw error
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Error al crear la cuenta')
 
-      // Intentar login inmediato (funciona si la confirmación de email está desactivada)
-      let session = data.session
-      if (!session) {
-        const { data: loginData } = await supabase.auth.signInWithPassword({
-          email: d.email, password: d.password,
-        })
-        session = loginData?.session ?? null
-      }
-
-      if (!session) {
-        // Confirmación de email obligatoria — mostrar pantalla de revisión de correo
-        setExitoData({ nombre: d.nombre, session: null, perfil: null, confirmarEmail: true })
-        setPantalla('exito')
-        return
-      }
-
-      // Buscar perfil (puede que el trigger de BD ya lo haya creado)
-      const { data: existente } = await supabase
-        .from('profiles').select('*').eq('id', session.user.id).maybeSingle()
-
-      const perfil = existente ?? await (async () => {
-        const { data: nuevo } = await supabase
-          .from('profiles')
-          .insert({ id: session.user.id, nombre: d.nombre, correo: d.email, tiendas })
-          .select().single()
-        return nuevo
-      })()
-
-      setExitoData({ nombre: d.nombre, session, perfil, confirmarEmail: false })
+      setExitoData({ nombre: d.nombre, session: null, perfil: null, confirmarEmail: true })
       setPantalla('exito')
     } catch (err) {
       setError(traducir(err.message))
