@@ -149,7 +149,7 @@ function PantallaBienvenida({ onCrear, onLogin }) {
 }
 
 // ── Login ──────────────────────────────────────────────────────────────────────
-function PantallaLogin({ onVolver, onSuccess }) {
+function PantallaLogin({ onVolver, onSuccess, avisoExiste }) {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [verPass, setVerPass]   = useState(false)
@@ -178,6 +178,12 @@ function PantallaLogin({ onVolver, onSuccess }) {
         <Logo />
         <h2 className="text-2xl font-black text-slate-800 mt-5 mb-1">Bienvenido de nuevo</h2>
         <p className="text-slate-500 text-sm">Inicia sesión en tu cuenta</p>
+        {avisoExiste && (
+          <div className="mt-3 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-3 text-sm text-blue-700 font-medium">
+            <span className="shrink-0 mt-0.5">ℹ️</span>
+            Ya tienes cuenta con ese correo. Introduce tu contraseña para entrar.
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -425,11 +431,12 @@ function PantallaExito({ nombre, confirmarEmail, onContinuar }) {
 // ══════════════════════════════════════════════════════════════════════════════
 export default function AuthPage({ onSuccess }) {
   // pantalla: bienvenida | login | reg1 | reg2 | reg3 | exito
-  const [pantalla, setPantalla] = useState('bienvenida')
-  const [datos, setDatos]       = useState({ nombre: '', email: '', password: '', tiendas: [] })
-  const [cargando, setCargando] = useState(false)
-  const [error, setError]       = useState('')
+  const [pantalla, setPantalla]   = useState('bienvenida')
+  const [datos, setDatos]         = useState({ nombre: '', email: '', password: '', tiendas: [] })
+  const [cargando, setCargando]   = useState(false)
+  const [error, setError]         = useState('')
   const [exitoData, setExitoData] = useState(null)
+  const [cuentaExiste, setCuentaExiste] = useState(false)
 
   function avanzarReg(nuevos) {
     const d = { ...datos, ...nuevos }
@@ -449,7 +456,15 @@ export default function AuthPage({ onSuccess }) {
         body: JSON.stringify({ email: d.email, password: d.password, nombre: d.nombre, tiendas }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Error al crear la cuenta')
+      if (!res.ok) {
+        // Cuenta ya confirmada → ir al login directamente
+        if (json.redirigirLogin) {
+          setCuentaExiste(true)
+          setPantalla('login')
+          return
+        }
+        throw new Error(json.error || 'Error al crear la cuenta')
+      }
 
       setExitoData({ nombre: d.nombre, session: null, perfil: null, confirmarEmail: true })
       setPantalla('exito')
@@ -469,8 +484,9 @@ export default function AuthPage({ onSuccess }) {
 
   if (pantalla === 'login') return (
     <PantallaLogin
-      onVolver={() => setPantalla('bienvenida')}
+      onVolver={() => { setCuentaExiste(false); setPantalla('bienvenida') }}
       onSuccess={onSuccess}
+      avisoExiste={cuentaExiste}
     />
   )
 
