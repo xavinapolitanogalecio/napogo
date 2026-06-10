@@ -179,7 +179,7 @@ export default function App() {
   // ─── Helpers de carga ───────────────────────────────────────────────
   async function cargarPerfilYHistorial(s) {
     const [{ data: p }, { data: h }] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', s.user.id).single(),
+      supabase.from('profiles').select('*').eq('id', s.user.id).maybeSingle(),
       supabase.from('repartos').select('id,user_id,tienda_nombre,cantidad,fecha').eq('user_id', s.user.id).order('fecha', { ascending: false }),
     ])
     setPerfil(p ?? null)
@@ -187,11 +187,18 @@ export default function App() {
     if (!p) {
       const meta = s.user.user_metadata ?? {}
       if (meta.nombre && Array.isArray(meta.tiendas) && meta.tiendas.length > 0) {
-        const { data: nuevo, error: insErr } = await supabase
+        const { data: insertado, error: insErr } = await supabase
           .from('profiles')
           .insert({ id: s.user.id, nombre: meta.nombre, correo: s.user.email, tiendas: meta.tiendas })
           .select().single()
-        if (!insErr && nuevo) {
+        let nuevo = insertado ?? null
+        if (insErr && !nuevo) {
+          // El trigger de BD ya creó el perfil — volvemos a buscarlo
+          const { data: existente } = await supabase
+            .from('profiles').select('*').eq('id', s.user.id).maybeSingle()
+          nuevo = existente ?? null
+        }
+        if (nuevo) {
           setPerfil(nuevo)
           setAuthState(nuevo.suscripcion_activa ? 'app' : 'paywall')
           return
@@ -243,11 +250,17 @@ export default function App() {
     }
     const meta = s.user.user_metadata ?? {}
     if (meta.nombre && Array.isArray(meta.tiendas) && meta.tiendas.length > 0) {
-      const { data: nuevo, error: insErr } = await supabase
+      const { data: insertado, error: insErr } = await supabase
         .from('profiles')
         .insert({ id: s.user.id, nombre: meta.nombre, correo: s.user.email, tiendas: meta.tiendas })
         .select().single()
-      if (!insErr && nuevo) {
+      let nuevo = insertado ?? null
+      if (insErr && !nuevo) {
+        const { data: existente } = await supabase
+          .from('profiles').select('*').eq('id', s.user.id).maybeSingle()
+        nuevo = existente ?? null
+      }
+      if (nuevo) {
         setPerfil(nuevo)
         setAuthState(nuevo.suscripcion_activa ? 'app' : 'paywall')
         return

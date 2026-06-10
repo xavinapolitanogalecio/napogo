@@ -34,7 +34,15 @@ export default function SetupPerfil({ session, onComplete }) {
         .from('profiles')
         .insert({ id: session.user.id, nombre: form.nombre.trim(), correo: session.user.email, tiendas })
         .select().single()
-      if (error) throw error
+      if (error) {
+        if (error.code === '23505') {
+          // El trigger ya creó el perfil — lo buscamos y continuamos
+          const { data: existente } = await supabase
+            .from('profiles').select('*').eq('id', session.user.id).maybeSingle()
+          if (existente) { onComplete(existente); return }
+        }
+        throw error
+      }
       onComplete(data)
     } catch (err) {
       setError(err.message)

@@ -84,7 +84,7 @@ export default function ChatPage({ perfil, session, onRepartoGuardado, isOnline 
     {
       id: 1,
       rol: 'bot',
-      texto: `¡Hola ${primerNombre}! 👋\n\nDime cómo fue el día. Por ejemplo:\n"Hoy 15 en ${perfil.tiendas[0] || 'Corominas'} y 9 en ${perfil.tiendas[1] || 'Prats'}"`,
+      texto: `¡Hola ${primerNombre}! 👋\n\nDime cómo fue el día. Por ejemplo:\n"Hoy 15 en ${perfil.tiendas?.[0] || 'Corominas'} y 9 en ${perfil.tiendas?.[1] || 'Prats'}"`,
       ts: Date.now(),
       estado: null,
     },
@@ -237,6 +237,7 @@ export default function ChatPage({ perfil, session, onRepartoGuardado, isOnline 
       })
       let respuesta = confirmacionLocal ?? '✅ Procesado.'
       if (res.ok) {
+        const clonedRes = res.clone()
         try {
           const data = await res.json()
           if (typeof data === 'string' && data.length > 0) respuesta = data
@@ -245,7 +246,7 @@ export default function ChatPage({ perfil, session, onRepartoGuardado, isOnline 
           else if (data?.message)   respuesta = data.message
         } catch {
           try {
-            const txt = await res.clone().text()
+            const txt = await clonedRes.text()
             if (txt.trim()) respuesta = txt.trim()
           } catch {}
         }
@@ -340,7 +341,7 @@ export default function ChatPage({ perfil, session, onRepartoGuardado, isOnline 
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`Ej: 15 en ${perfil.tiendas[0] || 'Corominas'} y 9 en ${perfil.tiendas[1] || 'Prats'}…`}
+            placeholder={`Ej: 15 en ${perfil.tiendas?.[0] || 'Corominas'} y 9 en ${perfil.tiendas?.[1] || 'Prats'}…`}
             rows={1}
             disabled={cargando}
             className="flex-1 resize-none bg-slate-100 dark:bg-gray-800 border border-transparent focus:border-blue-300 dark:focus:border-blue-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all max-h-28"
