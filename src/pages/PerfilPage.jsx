@@ -282,9 +282,7 @@ export default function PerfilPage({ usuario, onActualizar, onLogout, darkMode, 
       {/* ── NapoGo Status ── */}
       <div className="bg-slate-900 dark:bg-gray-800 rounded-2xl p-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-base shrink-0 select-none shadow-sm">
-            N
-          </div>
+          <img src="/NapoGologo.png" alt="NapoGo" className="w-10 h-10 object-contain shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-bold text-white text-sm">NapoGo</p>
             <p className="text-slate-400 text-xs">Sincronización en tiempo real activa</p>

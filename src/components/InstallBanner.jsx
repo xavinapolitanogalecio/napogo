@@ -25,9 +25,7 @@ export default function InstallBanner({ onInstalar, onDescartar, esIOS }) {
         <div className="bg-slate-900 rounded-2xl p-4 shadow-2xl border border-slate-700">
           <div className="flex items-start justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-sm shrink-0">
-                N
-              </div>
+              <img src="/NapoGologo.png" alt="NapoGo" className="w-9 h-9 object-contain shrink-0" />
               <div>
                 <p className="font-bold text-white text-sm">Instalar NapoGo</p>
                 <p className="text-slate-400 text-xs">Sigue estos pasos en Safari</p>
@@ -67,9 +65,7 @@ export default function InstallBanner({ onInstalar, onDescartar, esIOS }) {
 
         <div className="flex items-center gap-3 px-4 py-3">
           {/* Logo */}
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-base shrink-0 shadow-sm">
-            N
-          </div>
+          <img src="/NapoGologo.png" alt="NapoGo" className="w-10 h-10 object-contain shrink-0" />
 
           {/* Texto */}
           <div className="flex-1 min-w-0">

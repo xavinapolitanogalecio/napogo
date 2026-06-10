@@ -35,11 +35,9 @@ function IconEye({ open }) {
 
 // ── Logo NapoGo ────────────────────────────────────────────────────────────────
 function Logo({ size = 'md' }) {
-  const sz = size === 'lg' ? 'w-20 h-20 text-3xl rounded-3xl' : 'w-14 h-14 text-xl rounded-2xl'
+  const sz = size === 'lg' ? 'w-20 h-20' : 'w-14 h-14'
   return (
-    <div className={`${sz} bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-200 mx-auto`}>
-      <span className="text-white font-black select-none">N</span>
-    </div>
+    <img src="/NapoGologo.png" alt="NapoGo" className={`${sz} object-contain mx-auto`} />
   )
 }
 

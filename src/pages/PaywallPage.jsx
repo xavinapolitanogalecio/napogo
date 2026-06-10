@@ -62,9 +62,7 @@ export default function PaywallPage({ session, onSubscribed }) {
 
         {/* Branding */}
         <div className="text-center mb-6">
-          <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-200">
-            <span className="text-white font-black text-xl select-none">N</span>
-          </div>
+          <img src="/NapoGologo.png" alt="NapoGo" className="w-14 h-14 object-contain mx-auto mb-3" />
           <h1 className="text-xl font-bold text-slate-800">NapoGo</h1>
         </div>
 

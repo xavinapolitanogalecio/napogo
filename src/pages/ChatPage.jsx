@@ -36,9 +36,7 @@ function DeliveryIcon({ estado }) {
 
 function BotAvatar() {
   return (
-    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-black shrink-0 mt-0.5 select-none shadow-sm">
-      N
-    </div>
+    <img src="/NapoGologo.png" alt="NapoGo" className="w-7 h-7 object-contain shrink-0 mt-0.5" />
   )
 }
 
@@ -272,9 +270,7 @@ export default function ChatPage({ perfil, session, onRepartoGuardado, isOnline 
 
       {/* ── Header ── */}
       <div className="bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3 shrink-0 shadow-sm">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-sm shrink-0 select-none shadow-sm">
-          N
-        </div>
+        <img src="/NapoGologo.png" alt="NapoGo" className="w-9 h-9 object-contain shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="font-bold text-slate-800 dark:text-white text-sm leading-tight">NapoGo Assistant</p>
           <div className="flex items-center gap-1.5 mt-0.5">

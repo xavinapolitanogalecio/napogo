@@ -46,9 +46,7 @@ export default function Onboarding({ onComplete }) {
       <div className="w-full max-w-md">
         {/* Branding */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-200">
-            <span className="text-white font-black text-2xl tracking-tight select-none">N</span>
-          </div>
+          <img src="/NapoGologo.png" alt="NapoGo" className="w-16 h-16 object-contain mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-slate-800">NapoGo</h1>
           <p className="text-slate-500 text-sm mt-1">Tu asistente de repartos</p>
         </div>

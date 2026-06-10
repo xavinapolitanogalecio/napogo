@@ -57,9 +57,7 @@ export default function SetupPerfil({ session, onComplete }) {
 
         {/* Branding */}
         <div className="text-center mb-7">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-200">
-            <span className="text-white font-black text-2xl select-none">N</span>
-          </div>
+          <img src="/NapoGologo.png" alt="NapoGo" className="w-16 h-16 object-contain mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-slate-800">Configura tu perfil</h1>
           <p className="text-slate-500 text-sm mt-1">Un momento antes de empezar</p>
         </div>
